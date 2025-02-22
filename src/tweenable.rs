@@ -968,7 +968,7 @@ impl<T> Tweenable<T> for Sequence<T> {
             let tween_remaining = tween.duration().saturating_sub(tween.elapsed());
 
             tween.rewind();
-            delta -= tween_remaining;
+            delta = delta.saturating_sub(tween_remaining);
             self.index += 1;
         }
 
@@ -1366,7 +1366,13 @@ impl<T> Tweenable<T> for Delay<T> {
 mod tests {
     use std::sync::{Arc, Mutex};
 
-    use bevy::ecs::{component::Tick, event::Events, system::SystemState, world::CommandQueue};
+    use bevy::ecs::{
+        change_detection::MaybeLocation,
+        component::{Mutable, Tick},
+        event::Events,
+        system::SystemState,
+        world::CommandQueue,
+    };
 
     use super::*;
     use crate::{lens::*, test_utils::*};
@@ -1402,7 +1408,7 @@ mod tests {
     fn oneshot_test() {}
 
     /// Manually tick a test tweenable targeting a component.
-    fn manual_tick_component<T: Component>(
+    fn manual_tick_component<T: Component<Mutability = Mutable>>(
         duration: Duration,
         tween: &mut dyn Tweenable<T>,
         world: &mut World,
@@ -1436,12 +1442,14 @@ mod tests {
         let mut c = DummyComponent::default();
         let mut added = Tick::new(0);
         let mut last_changed = Tick::new(0);
+        let mut caller = MaybeLocation::caller();
         let mut target = ComponentTarget::new(Mut::new(
             &mut c,
             &mut added,
             &mut last_changed,
             Tick::new(0),
             Tick::new(1),
+            caller.as_mut(),
         ));
         let mut target = target.to_mut();
 
