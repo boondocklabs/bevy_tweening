@@ -190,7 +190,7 @@ mod tests {
         },
     };
 
-    use bevy::ecs::component::Mutable;
+    use bevy::{ecs::component::Mutable, window::RequestRedraw};
 
     use crate::{lens::TransformPositionLens, *};
 
@@ -208,6 +208,7 @@ mod tests {
         /// [`Transform`], and add the given animator on that same entity.
         pub fn new(animator: Animator<T>) -> Self {
             let mut world = World::new();
+            world.init_resource::<Events<RequestRedraw>>();
             world.init_resource::<Events<TweenCompleted>>();
             world.init_resource::<Time>();
 
@@ -224,6 +225,7 @@ mod tests {
         /// Like [`TestEnv::new`], but the component is placed on a separate entity.
         pub fn new_separated(animator: Animator<T>) -> Self {
             let mut world = World::new();
+            world.init_resource::<Events<RequestRedraw>>();
             world.init_resource::<Events<TweenCompleted>>();
             world.init_resource::<Time>();
 
