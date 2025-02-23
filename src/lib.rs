@@ -206,7 +206,7 @@
 
 use std::time::Duration;
 
-use bevy::prelude::*;
+use bevy::{ecs::system::SystemId, prelude::*};
 
 pub use lens::Lens;
 #[cfg(feature = "bevy_asset")]
@@ -510,6 +510,7 @@ pub struct Animator<T: Component> {
     pub target: Option<Entity>,
     tweenable: BoxedTweenable<T>,
     speed: f32,
+    pub(crate) completed_system_id: Option<SystemId>,
 }
 
 impl<T: Component + std::fmt::Debug> std::fmt::Debug for Animator<T> {
@@ -529,10 +530,19 @@ impl<T: Component> Animator<T> {
             tweenable: Box::new(tween),
             target: None,
             speed: 1.,
+            completed_system_id: None,
         }
     }
 
+    /// Set a one-shot system to run when this [`Animator`] completes the [`Tweenable`]
+    #[must_use]
+    pub fn with_completed_system(mut self, system_id: SystemId) -> Self {
+        self.completed_system_id = Some(system_id);
+        self
+    }
+
     /// Create a new version of this animator with the `target` set to the given entity.
+    #[must_use]
     pub fn with_target(mut self, entity: Entity) -> Self {
         self.target = Some(entity);
         self

@@ -957,6 +957,7 @@ impl<T> Tweenable<T> for Sequence<T> {
         events: &mut Mut<Events<TweenCompleted>>,
         commands: &mut Commands,
     ) -> TweenState {
+        trace!(delta=?delta, index=?self.index, tweens=?self.tweens.len(), "Sequence tick");
         self.elapsed = self.elapsed.saturating_add(delta).min(self.duration);
         while self.index < self.tweens.len() {
             let tween = &mut self.tweens[self.index];

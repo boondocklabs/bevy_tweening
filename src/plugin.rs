@@ -1,4 +1,4 @@
-use bevy::{ecs::component::Mutable, prelude::*};
+use bevy::{ecs::component::Mutable, prelude::*, window::RequestRedraw};
 
 #[cfg(feature = "bevy_asset")]
 use crate::{tweenable::AssetTarget, AssetAnimator};
@@ -42,6 +42,7 @@ impl Plugin for TweeningPlugin {
             component_animator_system::<Transform>.in_set(AnimationSystem::AnimationUpdate),
         );
 
+        /*
         #[cfg(feature = "bevy_ui")]
         app.add_systems(
             Update,
@@ -71,6 +72,7 @@ impl Plugin for TweeningPlugin {
             Update,
             component_animator_system::<TextColor>.in_set(AnimationSystem::AnimationUpdate),
         );
+        */
     }
 }
 
@@ -91,10 +93,16 @@ pub fn component_animator_system<T>(
     mut target_query: Query<&mut T>,
     events: ResMut<Events<TweenCompleted>>,
     mut commands: Commands,
+    mut writer: EventWriter<RequestRedraw>,
 ) where
     T: Component<Mutability = Mutable>,
 {
     let mut events: Mut<Events<TweenCompleted>> = events.into();
+
+    let delta = time.delta().min(Duration::from_secs_f32(1.0 / 30.0));
+
+    let mut request_redraw = false;
+
     for (animator_entity, mut animator) in animator_query.iter_mut() {
         if animator.state != AnimatorState::Paused {
             let speed = animator.speed();
@@ -103,19 +111,36 @@ pub fn component_animator_system<T>(
                 continue;
             };
             let mut target = ComponentTarget::new(target);
-            animator.tweenable_mut().tick(
-                time.delta().mul_f32(speed),
+            match animator.tweenable_mut().tick(
+                delta.mul_f32(speed),
                 &mut target,
                 entity,
                 &mut events,
                 &mut commands,
-            );
+            ) {
+                crate::TweenState::Active => {
+                    trace!("Active");
+                }
+                crate::TweenState::Completed => {
+                    if let Some(system_id) = &animator.completed_system_id {
+                        commands.run_system(*system_id);
+                    }
+                    trace!(animator=?entity, "Animator Complete");
+                }
+            }
         }
+
+        request_redraw = true;
+    }
+
+    if request_redraw {
+        writer.send(RequestRedraw);
     }
 }
 
 #[cfg(feature = "bevy_asset")]
 use std::ops::Deref;
+use std::time::Duration;
 
 /// Animator system for assets.
 ///
