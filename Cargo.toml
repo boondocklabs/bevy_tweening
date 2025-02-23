@@ -29,7 +29,7 @@ bevy_text = ["bevy/bevy_text", "bevy/bevy_render", "bevy/bevy_sprite"]
 [dependencies]
 # Note: need 'x11' or 'wayland' on Linux for winit to build
 # Note: abuse 'bevy_color' to force 'bevy_math/curve' feature, which defines EaseFunction
-bevy = { path = "../bevy", default-features = false, features = [
+bevy = { git = "https://github.com/boondocklabs/bevy", branch = "fix-missed-request-redraw", default-features = false, features = [
     "x11",
     "bevy_color",
     "bevy_window",
