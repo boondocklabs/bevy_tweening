@@ -42,7 +42,6 @@ impl Plugin for TweeningPlugin {
             component_animator_system::<Transform>.in_set(AnimationSystem::AnimationUpdate),
         );
 
-        /*
         #[cfg(feature = "bevy_ui")]
         app.add_systems(
             Update,
@@ -72,7 +71,6 @@ impl Plugin for TweeningPlugin {
             Update,
             component_animator_system::<TextColor>.in_set(AnimationSystem::AnimationUpdate),
         );
-        */
     }
 }
 
