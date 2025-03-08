@@ -36,14 +36,14 @@ bevy_text = ["bevy/bevy_text", "bevy/bevy_render", "bevy/bevy_sprite"]
 [dependencies]
 # Note: need 'x11' or 'wayland' on Linux for winit to build
 # Note: abuse 'bevy_color' to force 'bevy_math/curve' feature, which defines EaseFunction
-bevy = { git = "https://github.com/boondocklabs/bevy", branch = "dev", default-features = false, features = [
+bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", default-features = false, features = [
     "x11",
     "bevy_color",
     "bevy_window",
 ] }
 
 [dev-dependencies]
-bevy-inspector-egui = "0.28"
+#bevy-inspector-egui = "0.28"
 
 [[example]]
 name = "menu"
