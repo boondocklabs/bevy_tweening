@@ -16,7 +16,14 @@ readme = "README.md"
 exclude = ["examples/*.gif", ".github", "release.md", "run_examples.bat"]
 
 [features]
-default = ["bevy_sprite", "bevy_ui", "bevy_asset", "bevy_text"]
+default = [
+    "bevy/std",
+    "bevy/bevy_log",
+    "bevy_sprite",
+    "bevy_ui",
+    "bevy_asset",
+    "bevy_text",
+]
 # Enable support for Asset animation
 bevy_asset = ["bevy/bevy_asset"]
 # Enable built-in lenses for Bevy sprites

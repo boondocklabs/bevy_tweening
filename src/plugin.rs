@@ -132,7 +132,7 @@ pub fn component_animator_system<T>(
     }
 
     if request_redraw {
-        writer.send(RequestRedraw);
+        writer.write(RequestRedraw);
     }
 }
 
